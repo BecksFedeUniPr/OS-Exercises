@@ -19,7 +19,17 @@ class Process{
 
         //TODO getter and setter for needs
 
-        
+        Process& operator=(const Process& other) {
+            if (this != &other) {
+                Process* new_process = new Process(other.arrival_time,other.burst_time);
+
+                this->turnaround_time = other.turnaround_time;
+                this->waiting_time = other.waiting_time;
+
+                return *new_process;
+            }
+            return *this;
+        }
 };
 
 #endif
