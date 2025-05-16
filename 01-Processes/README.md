@@ -1,59 +1,217 @@
-# Processes (UK)
+# Processes & Inter-Process Communication
 
-A process is an instance of a program in execution. It contains the program code and its current activity. Each process has its own memory space, system resources, and security attributes. Processes are fundamental units of execution in modern operating systems, providing isolation, resource management, and concurrency.
+## Contents
+1. [Process Fundamentals](#process-fundamentals)
+2. [Process Creation](#process-creation)
+3. [IPC: Shared Memory](#ipc-shared-memory)
+4. [IPC: Message Queues](#ipc-message-queues) 
+5. [IPC: Pipes](#ipc-pipes)
+6. [IPC: Sockets](#ipc-sockets)
+7. [IPC: Remote Procedure Calls](#ipc-remote-procedure-calls)
 
-ICP: Shared memory, Message passing, Pipe
+## Process Fundamentals
 
-Socket, RPC
+A process is an instance of a program in execution. It's a unit of resource allocation and protection.
 
+### Key Concepts
+- **Process Image**: Program code, data, stack, heap, and other resources
+- **Process Control Block (PCB)**: Data structure containing process information
+- **Context Switch**: Saving/restoring state when switching between processes
+- **Process States**: New, Ready, Running, Waiting, Terminated
+- **Process ID (PID)**: Unique identifier for each process
 
-## Shared Memory
+### Process vs. Thread
+- Processes have separate memory spaces
+- Threads share the memory space of their parent process
+- Process creation is more resource-intensive than thread creation
+- IPC is required for processes to communicate, threads can share data directly
 
-Shared memory is a method of inter-process communication (IPC) that allows multiple processes to access the same region of memory. This enables fast data exchange between processes, as they can read and write to the shared memory segment directly. However, it requires synchronization mechanisms (like semaphores or mutexes) to prevent data corruption due to concurrent access.
+## Process Creation
 
+In POSIX systems, processes are created using `fork()` and can be transformed using `exec()` family functions.
 
-## Message Passing
+### Basic Fork Example
+```c
+#include <unistd.h>
+#include <stdio.h>
 
-Message passing is a communication method where processes send and receive messages to exchange data. This approach is more structured than shared memory, as it allows for better control over data flow and synchronization. Message passing can be implemented using various IPC mechanisms, such as message queues, sockets, or remote procedure calls (RPCs). It is suitable for distributed systems and applications where processes may not share the same memory space.
+int main() {
+    pid_t pid = fork();
+    
+    if (pid < 0) {
+        // Error handling
+        fprintf(stderr, "Fork failed\n");
+    } else if (pid == 0) {
+        // Child process code
+        printf("Child process: PID = %d\n", getpid());
+    } else {
+        // Parent process code
+        printf("Parent process: PID = %d, Child PID = %d\n", getpid(), pid);
+    }
+    
+    return 0;
+}
+```
 
-# Pipe
+### Exec Example
+```c
+#include <unistd.h>
+#include <stdio.h>
 
-A pipe is a unidirectional communication channel that allows one process to send data to another. Pipes are commonly used for inter-process communication in Unix-like operating systems. They can be either anonymous (used for communication between related processes) or named (used for communication between unrelated processes). Pipes are typically used for simple data transfer and can be easily implemented using system calls like `pipe()`, `read()`, and `write()`.
+int main() {
+    // Replace current process with ls command
+    execl("/bin/ls", "ls", "-l", NULL);
+    
+    // If exec returns, it failed
+    perror("exec failed");
+    return 1;
+}
+```
 
-# Socket
+## IPC: Shared Memory
 
-Sockets are a more advanced IPC mechanism that allows processes to communicate over a network. They provide a flexible and powerful way to exchange data between processes, whether they are on the same machine or across different machines. Sockets can be used for both connection-oriented (TCP) and connectionless (UDP) communication. They are widely used in client-server applications and distributed systems.
+POSIX shared memory allows multiple processes to access a common memory region.
 
-# Remote Procedure Call (RPC)
+### Basic Shared Memory Example
+```c
+#include <fcntl.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <string.h>
 
-RPC is a communication method that allows a program to execute a procedure (or function) on a remote server as if it were a local call. This abstraction simplifies the process of building distributed applications, as developers can focus on the functionality rather than the underlying communication details. RPC can be implemented using various protocols, such as HTTP, gRPC, or SOAP.
+int main() {
+    // Create and open shared memory object
+    int fd = shm_open("/myshm", O_CREAT | O_RDWR, 0666);
+    
+    // Set size
+    ftruncate(fd, 4096);
+    
+    // Map into address space
+    void *addr = mmap(NULL, 4096, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    
+    // Write to shared memory
+    strcpy((char *)addr, "Hello via shared memory");
+    
+    // Clean up
+    munmap(addr, 4096);
+    close(fd);
+    // shm_unlink("/myshm"); // Uncomment to remove the shared memory object
+    
+    return 0;
+}
+```
 
-# Processi (ITA)
+## IPC: Message Queues
 
-Un processo è un'istanza di un programma in esecuzione. Contiene il codice del programma e la sua attività corrente. Ogni processo ha il proprio spazio di memoria, risorse di sistema e attributi di sicurezza. I processi sono unità fondamentali di esecuzione nei sistemi operativi moderni, che forniscono isolamento, gestione delle risorse e concorrenza.
+POSIX message queues provide a way for processes to exchange data in the form of messages.
 
-ICP: Shared memory, Message passing, Pipe
+### Message Queue Example
+```c
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <mqueue.h>
+#include <string.h>
 
-Socket, RPC
+int main() {
+    // Create/open message queue
+    mqd_t mq = mq_open("/myqueue", O_CREAT | O_RDWR, 0666, NULL);
+    
+    // Send message
+    const char *msg = "Hello via message queue";
+    mq_send(mq, msg, strlen(msg), 0);
+    
+    // Clean up
+    mq_close(mq);
+    // mq_unlink("/myqueue"); // Uncomment to remove the queue
+    
+    return 0;
+}
+```
 
+## IPC: Pipes
 
-## Shared Memory
+Pipes provide a simple unidirectional communication channel between related processes.
 
-Shared memory è un metodo di comunicazione inter-processo (IPC) che consente a più processi di accedere alla stessa regione di memoria. Ciò permette uno scambio rapido di dati tra processi, poiché possono leggere e scrivere direttamente nel segmento di memoria condivisa. Tuttavia, richiede meccanismi di sincronizzazione (come semafori o mutex) per prevenire la corruzione dei dati dovuta all'accesso concorrente.
+### Unnamed Pipe Example
+```c
+#include <unistd.h>
+#include <string.h>
 
+int main() {
+    int pipefd[2];
+    pipe(pipefd); // Create pipe
+    
+    if (fork() == 0) { // Child
+        close(pipefd[1]); // Close unused write end
+        
+        char buf[100];
+        read(pipefd[0], buf, sizeof(buf));
+        printf("Received: %s\n", buf);
+        
+        close(pipefd[0]);
+    } else { // Parent
+        close(pipefd[0]); // Close unused read end
+        
+        const char *msg = "Hello via pipe";
+        write(pipefd[1], msg, strlen(msg) + 1);
+        
+        close(pipefd[1]);
+    }
+    
+    return 0;
+}
+```
 
-## Message Passing
+### Named Pipe (FIFO) Example
+```c
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
-Message passing è un metodo di comunicazione in cui i processi inviano e ricevono messaggi per scambiare dati. Questo approccio è più strutturato rispetto alla memoria condivisa, poiché consente un migliore controllo del flusso di dati e della sincronizzazione. Il message passing può essere implementato utilizzando vari meccanismi IPC, come code di messaggi, socket o chiamate di procedura remota (RPC). È adatto per sistemi distribuiti e applicazioni in cui i processi potrebbero non condividere lo stesso spazio di memoria.
+int main() {
+    // Create FIFO
+    mkfifo("/tmp/myfifo", 0666);
+    
+    // Open for writing (in a real example, reading would be in another process)
+    int fd = open("/tmp/myfifo", O_WRONLY);
+    
+    // Write data
+    const char *msg = "Hello via FIFO";
+    write(fd, msg, strlen(msg) + 1);
+    
+    // Clean up
+    close(fd);
+    unlink("/tmp/myfifo");
+    
+    return 0;
+}
+```
 
-# Pipe
+## IPC: Sockets
 
-Una pipe è un canale di comunicazione unidirezionale che consente a un processo di inviare dati a un altro. Le pipe sono comunemente utilizzate per la comunicazione inter-processo nei sistemi operativi Unix-like. Possono essere anonime (utilizzate per la comunicazione tra processi correlati) o nominate (utilizzate per la comunicazione tra processi non correlati). Le pipe sono tipicamente utilizzate per il trasferimento semplice di dati e possono essere facilmente implementate utilizzando chiamate di sistema come `pipe()`, `read()` e `write()`.
+Sockets provide a communication mechanism between processes running on the same or different machines.
 
-# Socket
+### Key Concepts
+- Support both local (Unix domain) and network (Internet domain) communication
+- Bidirectional communication
+- Can use TCP (connection-oriented) or UDP (connectionless)
+- POSIX socket API includes: `socket()`, `bind()`, `listen()`, `accept()`, `connect()`, `send()`, `recv()`
 
-I socket sono un meccanismo IPC più avanzato che consente ai processi di comunicare attraverso una rete. Forniscono un modo flessibile e potente per scambiare dati tra processi, sia che si trovino sulla stessa macchina sia su macchine diverse. I socket possono essere utilizzati sia per comunicazioni orientate alla connessione (TCP) che senza connessione (UDP). Sono ampiamente utilizzati nelle applicazioni client-server e nei sistemi distribuiti.
+Unix domain sockets are used for local IPC and are more efficient than network sockets when communicating between processes on the same machine. They use file system pathnames for addressing.
 
-# Remote Procedure Call (RPC)
+Network sockets allow communication across different machines using IP addresses and ports. They're the foundation of network programming and distributed systems.
 
-RPC è un metodo di comunicazione che consente a un programma di eseguire una procedura (o funzione) su un server remoto come se fosse una chiamata locale. Questa astrazione semplifica il processo di costruzione di applicazioni distribuite, poiché gli sviluppatori possono concentrarsi sulla funzionalità piuttosto che sui dettagli di comunicazione sottostanti. RPC può essere implementato utilizzando vari protocolli, come HTTP, gRPC o SOAP.
+## IPC: Remote Procedure Calls
+
+Remote Procedure Calls (RPC) allow a program to execute procedures on another computer or in another process.
+
+### Key Concepts
+- Makes remote procedure calls appear like local function calls
+- Abstracts away network communication details
+- Client stub marshals parameters and handles communication
+- Server stub receives requests and invokes the actual procedure
+- Results are sent back to the client
+
+Modern RPC frameworks include gRPC (by Google), which uses Protocol Buffers for efficient serialization and HTTP/2 for communication. Traditional POSIX systems might use Sun RPC/ONC RPC.
+
+RPCs are fundamental to distributed systems, microservices, and client-server applications.
