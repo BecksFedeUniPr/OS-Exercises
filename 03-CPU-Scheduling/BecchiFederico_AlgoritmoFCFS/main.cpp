@@ -1,18 +1,16 @@
 #include <iostream>
 
-// TODO struttura dati  processo ove ogni processo ha tempo di arrivo e burst turnaround time e waiting time come parametri
-// TODO struttura dati coda per avere i processi in esecuzione 
-
-
-/* FLUSSO CODICE LO PENSO COSI INSERISCO TUTTI I PROCESSI NELLA CODA 
-    faccio un'iterazione ovvero computo il processo che è arrivato per primo nella coda
-    fino a che la coda non è vuota.
-    ad ogni iterazione (esecuzione di un processo) aggiorno il turaroudn time e il waiting time
-    quando tutti i processi sono stati eseguiti calcolo le statistiche
-*/
+#include "Process.h"
+#include "QuequeProc.h"
 
 
 
 int main(){
+    QuequeProc queque_proc;
 
+    Process p1(0, 24);  // P1: arrival time 0, burst time 24
+    Process p2(1, 3);   // P2: arrival time 1, burst time 3
+    Process p3(2, 3); // P3: arrival time 2, burst time 3
+
+    
 }
