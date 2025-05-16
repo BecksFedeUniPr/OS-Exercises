@@ -10,6 +10,7 @@ class Process{
         const time_unit burst_time;
         time_unit turnaround_time;
         time_unit waiting_time;
+
     public:
         Process(time_unit arv_time , time_unit brst_time) : arrival_time(arv_time) , burst_time(brst_time){
             this->turnaround_time = 0;
@@ -17,6 +18,8 @@ class Process{
         }
 
         //TODO getter and setter for needs
+
+        
 };
 
 #endif
