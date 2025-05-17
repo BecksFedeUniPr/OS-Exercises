@@ -23,6 +23,13 @@ int main(){
 
     int time = 0;
 
+    std::cout << "Process Queue: ";
+
+    for(int i = 0; i < n_process; i++)
+    {
+        std::cout << 
+    }
+
     while (!queque_proc.isEmpty())
     {
         Process current_process = queque_proc.dequee();

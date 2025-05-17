@@ -18,6 +18,7 @@ public:
     Process dequee();
     int getSize();
     bool isEmpty();
+    const Process& operator[](int index) const;
 };
 
 #endif

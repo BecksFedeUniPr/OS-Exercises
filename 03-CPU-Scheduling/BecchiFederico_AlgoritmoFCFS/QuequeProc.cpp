@@ -50,6 +50,13 @@ bool QuequeProc::isEmpty() {
     return getSize() == 0;
 }
 
+const Process& QuequeProc::operator[](int index) const {
+    if(index < 0 || index >= n_process) {
+        throw "Error index"; // TODO: Usare un'eccezione appropriata
+    }
+    return queque[index];
+}
+
 QuequeProc::~QuequeProc() {
     for(int i = 0; i < n_process; i++) {
         queque[i].~Process();

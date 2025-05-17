@@ -23,6 +23,7 @@ public:
     time_unit getTurnaroundTime() const;
     time_unit getWaitingTime() const;
     std::string getProcessName() const;
+
     
 private:
     time_unit arrival_time;
