@@ -38,6 +38,10 @@ void Process::setWaitingTime(time_unit w_time) {
     this->waiting_time = w_time;
 }
 
+void Process::setProcessName(const std::string& name) {
+    this->process_name = name;
+}
+
 Process::time_unit Process::getArrivalTime() const {
     return this->arrival_time;
 }
@@ -53,3 +57,8 @@ Process::time_unit Process::getTurnaroundTime() const {
 Process::time_unit Process::getWaitingTime() const {
     return this->waiting_time;
 }
+
+std::string Process::getProcessName() const {
+    return this->process_name;
+}
+

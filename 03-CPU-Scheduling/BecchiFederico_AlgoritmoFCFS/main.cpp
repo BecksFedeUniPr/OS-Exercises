@@ -38,4 +38,5 @@ int main(){
     std::cout << "Average Waiting Time: " << avg_waiting_time / n_process << std::endl;
     std::cout << "Average Turnaround Time: " << avg_turnaround_time / n_process << std::endl;
     
+    return 0;
 }
