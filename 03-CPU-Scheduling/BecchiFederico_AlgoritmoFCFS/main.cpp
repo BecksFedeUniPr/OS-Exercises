@@ -28,7 +28,7 @@ int main()
     {
         Process current_process = queque_proc[i];
         std::cout << current_process.getProcessName() << " ( Arrival: " << current_process.getArrivalTime()
-                  << ", Burst: " << current_process.getBurstTime() << " ) " << std::endl;
+                  << ", Burst: " << current_process.getBurstTime() << " ) ," ;
     }
 
     std::cout << "Execution Sequence: " << std::endl;

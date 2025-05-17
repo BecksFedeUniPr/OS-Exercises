@@ -18,6 +18,9 @@ Process& Process::operator=(const Process& other) {
         this->burst_time = other.burst_time;
         this->turnaround_time = other.turnaround_time;
         this->waiting_time = other.waiting_time;
+        this->starting_time = other.starting_time;
+        this->finish_time = other.finish_time;
+        this->process_name = other.process_name; // My choise to copy the process name should be used an id
     }
     return *this;
 }
