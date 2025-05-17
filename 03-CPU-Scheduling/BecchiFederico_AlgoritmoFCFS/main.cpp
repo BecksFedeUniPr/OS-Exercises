@@ -33,23 +33,22 @@ int main()
 
     std::cout << std::endl << "Execution Sequence: " << std::endl;
 
-    while (!queque_proc.isEmpty())
+    for (size_t i = 0; i < queque_proc.getSize(); i++)
     {
-        Process current_process = queque_proc.dequee();
-
+        Process& current_process = queque_proc[i];
         current_process.setStartingTime(time);
-        current_process.setWaitingTime(current_process.getArrivalTime() - time);
+        current_process.setWaitingTime(time - current_process.getArrivalTime());
         current_process.setTurnaroundTime(current_process.getWaitingTime() + current_process.getBurstTime());
         time += current_process.getBurstTime();
-
         current_process.setFinishTime(time);
         avg_waiting_time += current_process.getWaitingTime();
         avg_turnaround_time += current_process.getTurnaroundTime();
     }
+    
 
     for (int i = 0; i < n_process; i++)
     {
-        Process current_process = queque_proc[i];
+        Process& current_process = queque_proc[i];
         std::cout << current_process.getStartingTime() << "-" << current_process.getFinishTime() << ": "
                   << current_process.getProcessName() << " executes" << std::endl;
     }
@@ -58,14 +57,14 @@ int main()
     std::cout << "--------|-----------------|-------------" << std::endl;
     for (int i = 0; i < n_process; i++)
     {
-        Process current_process = queque_proc[i];
+        Process& current_process = queque_proc[i];
         std::cout << current_process.getProcessName() << "\t| "
                   << current_process.getTurnaroundTime() << "\t\t| "
                   << current_process.getWaitingTime() << std::endl;
     }
 
-    std::cout << "Average Waiting Time: " << avg_waiting_time / n_process << std::endl;
-    std::cout << "Average Turnaround Time: " << avg_turnaround_time / n_process << std::endl;
+    std::cout << "Average Waiting Time: " << static_cast<float>(avg_waiting_time / n_process) << std::endl;
+    std::cout << "Average Turnaround Time: " << static_cast<float>(avg_turnaround_time / n_process) << std::endl;
 
     return 0;
 }
