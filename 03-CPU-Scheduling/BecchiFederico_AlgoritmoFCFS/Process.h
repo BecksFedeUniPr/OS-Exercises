@@ -7,6 +7,8 @@ public:
     
     Process();
     Process(time_unit arv_time, time_unit brst_time);
+    ~Process() = default;
+    Process(const Process& other) = default;
     Process& operator=(const Process& other);
     
     void setArrivalTime(time_unit arv_time);
