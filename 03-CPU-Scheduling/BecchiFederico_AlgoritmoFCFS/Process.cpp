@@ -42,6 +42,13 @@ void Process::setProcessName(const std::string& name) {
     this->process_name = name;
 }
 
+void Process::setStartingTime(time_unit st_time) {
+    this->starting_time = st_time;
+}
+void Process::setFinishTime(time_unit f_time) {
+    this->finish_time = f_time;
+}
+
 Process::time_unit Process::getArrivalTime() const {
     return this->arrival_time;
 }
@@ -62,3 +69,9 @@ std::string Process::getProcessName() const {
     return this->process_name;
 }
 
+Process::time_unit Process::getStartingTime() const {
+    return this->starting_time;
+}
+Process::time_unit Process::getFinishTime() const {
+    return this->finish_time;
+}
