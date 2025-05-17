@@ -5,11 +5,14 @@ Process::Process() {
     this->burst_time = 0;
     this->turnaround_time = 0;
     this->waiting_time = 0;
+    this->starting_time = 0;
+    this->finish_time = 0;
+    this->process_name = "Process"; 
 }
 
-Process::Process(time_unit arv_time, time_unit brst_time)
-    : arrival_time(arv_time), burst_time(brst_time), turnaround_time(0), waiting_time(0)
-{
+Process::Process(time_unit arv_time, time_unit brst_time,std::string name)
+    : arrival_time(arv_time), burst_time(brst_time), turnaround_time(0), waiting_time(0) , 
+      starting_time(0), finish_time(0), process_name(name) {
 }
 
 Process& Process::operator=(const Process& other) {

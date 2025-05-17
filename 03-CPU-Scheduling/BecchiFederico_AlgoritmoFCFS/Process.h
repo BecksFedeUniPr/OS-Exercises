@@ -8,7 +8,7 @@ public:
     using time_unit = int;
     
     Process();
-    Process(time_unit arv_time, time_unit brst_time);
+    Process(time_unit arv_time, time_unit brst_time,std::string name);
     ~Process() = default;
     Process(const Process& other) = default;
     Process& operator=(const Process& other);
