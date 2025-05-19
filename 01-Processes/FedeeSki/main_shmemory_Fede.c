@@ -82,9 +82,10 @@ int main(int argc, char *argv[])
             exit(EXIT_FAILURE);
         }
         exit(EXIT_SUCCESS);
-    } else {
+    } 
+    else { // if (pid > 0)
         //PARENT PROCESS CODE, wait CHILD to complete (with mutex o semafori in real project)
-        sleep(1.5);
+        sleep(1); 
 
         printf("PARENT PROCESS: I read counter:%d, message='%s'\n",
                     shdata->counter, shdata->msg);

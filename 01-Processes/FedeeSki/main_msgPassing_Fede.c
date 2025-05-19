@@ -97,7 +97,8 @@ int main(int argc, char const *argv[])
         sem_close(sem_child);
         exit(EXIT_SUCCESS);
         
-    } else { // PARENT PROCESS
+    } 
+    else { // PARENT PROCESS if (pid > 0)
         message_type msg_received;
         message_type msg_to_send;
 
