@@ -7,6 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 
+
 int main(){
     int shmid;
     char* str;
@@ -14,7 +15,7 @@ int main(){
 
     shmid = shmget(IPC_PRIVATE,100,IPC_CREAT | 0666);
 
-    if(shmid < 0){
+    if(smhid < 0){
         perror("Fallita la creazione di memoria condivisa");
     }
 
