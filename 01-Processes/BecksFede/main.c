@@ -15,7 +15,7 @@ int main(){
 
     shmid = shmget(IPC_PRIVATE,100,IPC_CREAT | 0666);
 
-    if(smhid < 0){
+    if(shmid < 0){
         perror("Fallita la creazione di memoria condivisa");
     }
 
