@@ -9,7 +9,7 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CC) $(OBJ) -o $(TARGET)
 
-%.o: %.c
+%.o: %.c src/buffer.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
