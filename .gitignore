@@ -1,3 +1,6 @@
+<<<<<<< HEAD
+./.vscode/*
+=======
 .vscode
 # Object files
 *.o
@@ -76,3 +79,4 @@ logs/
 core
 
 
+>>>>>>> upstream/main
