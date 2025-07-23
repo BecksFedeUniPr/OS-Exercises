@@ -41,6 +41,8 @@ int main(){
     pthread_t thread1 , thread2;
     int id1 = 0 , id2 = 1;
 
+    volatile int c = 0;
+    
     // Crea i thread
     pthread_create(&thread1, nullptr, thread_function, &id1);
     pthread_create(&thread2, nullptr, thread_function, &id2);
