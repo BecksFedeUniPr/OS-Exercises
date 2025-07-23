@@ -106,22 +106,35 @@ public:
 
         auto shortest = ready_queue.end();
 
-        // Prima iterazione: cerca processi arrivati al tempo corrente
+        // Cerca il processo con il burst time più breve tra quelli arrivati
         for (auto it = ready_queue.begin(); it != ready_queue.end(); ++it)
         {
             if (it->getArrivalTime() <= current_time)
             { // Processo già arrivato
-                if (it->getBurstTime() < shortest->getBurstTime())
+                if (shortest == ready_queue.end() || it->getBurstTime() < shortest->getBurstTime())
                 {
                     shortest = it;
-                }else if(it->getBurstTime() == shortest->getBurstTime() 
-                            && it->getArrivalTime() <= shortest->getArrivalTime())
-                        shortest = it;
+                }
+                else if (it->getBurstTime() == shortest->getBurstTime() &&
+                         it->getArrivalTime() < shortest->getArrivalTime())
+                {
+                    shortest = it;
+                }
             }
         }
 
-        Process *next = &(*shortest);
+        // Se nessun processo è pronto, ritorna nullptr
+        if (shortest == ready_queue.end())
+        {
+            return nullptr;
+        }
+
+        // Crea una copia del processo selezionato
+        Process *next = new Process(*shortest);
+
+        // Rimuovi il processo dalla lista in modo sicuro
         ready_queue.erase(shortest);
+
         return next;
     }
 
@@ -129,20 +142,28 @@ public:
     {
         while (!ready_queue.empty())
         {
-            Process current = *getNextProcess();
-            if (&current != nullptr)
+            Process *current = getNextProcess();
+            if (current != nullptr)
             {
-            
-                current.setWaitingTime(current_time - current.getArrivalTime());
+                // Calcola il tempo di attesa
+                current->setWaitingTime(current_time - current->getArrivalTime());
 
-                // Execute process
-                current_time += current.getBurstTime();
+                // Esegui il processo
+                current_time += current->getBurstTime();
 
-                // Calculate turnaround time (total time in system)
-                current.setTurnaroundTime(current_time - current.getArrivalTime());
+                // Calcola il turnaround time
+                current->setTurnaroundTime(current_time - current->getArrivalTime());
 
-                // Add to completed process
-                completed_processes.push_back(current);
+                // Aggiungi il processo completato alla lista
+                completed_processes.push_back(*current);
+
+                // Libera la memoria del processo selezionato
+                delete current;
+            }
+            else
+            {
+                // Se nessun processo è pronto, avanza il tempo
+                current_time++;
             }
         }
     }
