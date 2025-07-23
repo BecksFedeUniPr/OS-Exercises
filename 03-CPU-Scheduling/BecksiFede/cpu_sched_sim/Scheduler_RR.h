@@ -1,5 +1,5 @@
-#ifndef SCHEDULER_SJF_H // Should be this
-#define SCHEDULER_SJF_H
+#ifndef SCHEDULER_RR_H // Should be this
+#define SCHEDULER_RR_H
 
 #include <list>
 #include <vector>

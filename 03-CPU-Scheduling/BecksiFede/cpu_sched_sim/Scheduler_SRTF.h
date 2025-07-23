@@ -1,5 +1,5 @@
-#ifndef SCHEDULER_SJF_H // Should be this
-#define SCHEDULER_SJF_H
+#ifndef SCHEDULER_SRTF_H // Should be this
+#define SCHEDULER_SRTF_H
 
 #include <list>
 #include <vector>
@@ -112,22 +112,10 @@ public:
                         it->getRemainingTime() < shortest->getRemainingTime())
                     {
                         shortest = it;
-                    }
-                }
-            }
-
-            // Se non ci sono processi arrivati, avanza il tempo al prossimo arrivo
-            if (shortest == ready_queue.end())
-            {
-                shortest = ready_queue.begin();
-                for (auto it = ready_queue.begin(); it != ready_queue.end(); ++it)
-                {
-                    if (it->getArrivalTime() < shortest->getArrivalTime())
-                    {
+                    } else if(shortest->getRemainingTime() == it->getRemainingTime()
+                     && it->getArrivalTime() <= shortest->getArrivalTime())
                         shortest = it;
-                    }
                 }
-                current_time = shortest->getArrivalTime();
             }
             
             shortest->setRemainingTime(shortest->getRemainingTime() - 1);

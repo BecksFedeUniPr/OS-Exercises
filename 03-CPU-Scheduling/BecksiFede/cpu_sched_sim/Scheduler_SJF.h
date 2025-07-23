@@ -111,24 +111,12 @@ public:
         {
             if (it->getArrivalTime() <= current_time)
             { // Processo già arrivato
-                if (shortest == ready_queue.end() ||
-                    it->getBurstTime() < shortest->getBurstTime())
+                if (it->getBurstTime() < shortest->getBurstTime())
                 {
                     shortest = it;
-                }
-            }
-        }
-
-        // Se non ci sono processi arrivati, trova il prossimo arrivo
-        if (shortest == ready_queue.end())
-        {
-            shortest = ready_queue.begin();
-            for (auto it = ready_queue.begin(); it != ready_queue.end(); ++it)
-            {
-                if (it->getArrivalTime() < shortest->getArrivalTime())
-                {
-                    shortest = it;
-                }
+                }else if(it->getBurstTime() == shortest->getBurstTime() 
+                            && it->getArrivalTime() <= shortest->getArrivalTime())
+                        shortest = it;
             }
         }
 

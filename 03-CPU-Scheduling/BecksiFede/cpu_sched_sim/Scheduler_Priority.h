@@ -1,5 +1,5 @@
-#ifndef SCHEDULER_SJF_H // Should be this
-#define SCHEDULER_SJF_H
+#ifndef SCHEDULER_Priority_H // Should be this
+#define SCHEDULER_Priority_H
 
 #include <list>
 #include <vector>
@@ -12,9 +12,92 @@ private:
     std::list<Process> ready_queue; // Changed from queue to list
     std::vector<Process> completed_processes;
     int current_time;
+    bool is_preemptive;
+
+    void run_preemtive() {
+        while (!ready_queue.empty()) {
+            auto current_proc = ready_queue.end();
+
+            // Trova il processo con la priorità più alta tra quelli arrivati
+            for (auto it = ready_queue.begin(); it != ready_queue.end(); ++it) {
+                if (it->getArrivalTime() <= current_time) {
+                    if (current_proc == ready_queue.end() || 
+                        it->getPriority() < current_proc->getPriority()) {
+                        current_proc = it;
+                    } else if (it->getPriority() == current_proc->getPriority() &&
+                               it->getArrivalTime() < current_proc->getArrivalTime()) {
+                        current_proc = it;
+                    }
+                }
+            }
+
+            // Se nessun processo è pronto, avanza il tempo al prossimo arrivo
+            if (current_proc == ready_queue.end()) {
+                current_time++;
+                continue; // Riprova a trovare un processo pronto
+            }
+
+            // Esegui il processo per 1 unità di tempo
+            current_proc->setRemainingTime(current_proc->getRemainingTime() - 1);
+            current_time++;
+
+            // Se il processo è completato
+            if (current_proc->getRemainingTime() == 0) {
+                Process completed = *current_proc; // Crea una copia del processo
+                ready_queue.erase(current_proc);   // Rimuovi il processo dalla lista
+
+                // Calcola il turnaround time e il waiting time
+                completed.setTurnaroundTime(current_time - completed.getArrivalTime());
+                completed.setWaitingTime(completed.getTurnaroundTime() - completed.getBurstTime());
+
+                // Aggiungi il processo completato alla lista
+                completed_processes.push_back(completed);
+            }
+        }
+    }
+
+    void run_no_preemtive() {
+        while (!ready_queue.empty()) {
+            auto current_proc = ready_queue.end();
+
+            // Trova il processo con la priorità più alta tra quelli arrivati
+            for (auto it = ready_queue.begin(); it != ready_queue.end(); ++it) {
+                if (it->getArrivalTime() <= current_time) {
+                    if (current_proc == ready_queue.end() || 
+                        it->getPriority() < current_proc->getPriority()) {
+                        current_proc = it;
+                    } else if (it->getPriority() == current_proc->getPriority() &&
+                               it->getArrivalTime() < current_proc->getArrivalTime()) {
+                        current_proc = it;
+                    }
+                }
+            }
+
+            // Se nessun processo è pronto, avanza il tempo
+            if (current_proc == ready_queue.end()) {
+                current_time++;
+                continue; // Riprova a trovare un processo pronto
+            }
+
+            // Calcola il waiting time
+            current_proc->setWaitingTime(current_time - current_proc->getArrivalTime());
+
+            // Esegui il processo
+            current_time += current_proc->getBurstTime();
+
+            // Calcola il turnaround time
+            current_proc->setTurnaroundTime(current_time - current_proc->getArrivalTime());
+
+            // Aggiungi il processo completato alla lista
+            completed_processes.push_back(*current_proc);
+
+            // Rimuovi il processo dalla lista
+            ready_queue.erase(current_proc);
+        }
+    }
 
 public:
-    Scheduler_Priority(const int& quantum_time) : current_time(0) {}
+    Scheduler_Priority(const bool& is_preemtive) :  is_preemptive(is_preemtive) , current_time(0) {}
 
     void addProcess(Process &p)
     {
@@ -98,12 +181,11 @@ public:
 
     void run()
     {
-        while (!ready_queue.empty())
-        {
-        
-    
-        
-        }
+        if(is_preemptive)
+            run_preemtive();
+        else 
+            run_no_preemtive();
     }
+
 };
 #endif
