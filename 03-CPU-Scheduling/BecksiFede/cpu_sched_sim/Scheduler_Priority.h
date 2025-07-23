@@ -22,7 +22,7 @@ private:
             for (auto it = ready_queue.begin(); it != ready_queue.end(); ++it) {
                 if (it->getArrivalTime() <= current_time) {
                     if (current_proc == ready_queue.end() || 
-                        it->getPriority() < current_proc->getPriority()) {
+                        it->getPriority() > current_proc->getPriority()) {
                         current_proc = it;
                     } else if (it->getPriority() == current_proc->getPriority() &&
                                it->getArrivalTime() < current_proc->getArrivalTime()) {
@@ -64,7 +64,7 @@ private:
             for (auto it = ready_queue.begin(); it != ready_queue.end(); ++it) {
                 if (it->getArrivalTime() <= current_time) {
                     if (current_proc == ready_queue.end() || 
-                        it->getPriority() < current_proc->getPriority()) {
+                        it->getPriority() > current_proc->getPriority()) {
                         current_proc = it;
                     } else if (it->getPriority() == current_proc->getPriority() &&
                                it->getArrivalTime() < current_proc->getArrivalTime()) {
@@ -146,37 +146,33 @@ public:
     }
 
     void printMetrics() const {
-        std::cout << "\n=== Scheduling Metrics ===\n";
-    
-        // Throughput
-        double throughput = static_cast<double>(completed_processes.size()) / current_time;
-        std::cout << "Throughput: " << throughput << " processes/unit time\n";
-    
-        // Average Turnaround Time
+        std::cout << "\n=== Priority Scheduling Metrics ===\n";
+
+        // Intestazione
+        std::cout << "Process | Turnaround Time | Waiting Time\n";
+        std::cout << "--------|----------------|-------------\n";
+
         double total_turnaround_time = 0.0;
-        for (const auto &process : completed_processes) {
-            total_turnaround_time += process.getTurnaroundTime();
-        }
-        double avg_turnaround_time = total_turnaround_time / completed_processes.size();
-        std::cout << "Average Turnaround Time: " << avg_turnaround_time << " units\n";
-    
-        // Average Waiting Time
         double total_waiting_time = 0.0;
+
+        // Stampa i dettagli di ogni processo completato
         for (const auto &process : completed_processes) {
+            std::cout << "P" << process.getPid() << "      | "
+                      << process.getTurnaroundTime() << "             | "
+                      << process.getWaitingTime() << "\n";
+
+            total_turnaround_time += process.getTurnaroundTime();
             total_waiting_time += process.getWaitingTime();
         }
+
+        // Calcola le medie
+        double avg_turnaround_time = total_turnaround_time / completed_processes.size();
         double avg_waiting_time = total_waiting_time / completed_processes.size();
-        std::cout << "Average Waiting Time: " << avg_waiting_time << " units\n";
-    
-        // Average Response Time
-        double total_response_time = 0.0;
-        for (const auto &process : completed_processes) {
-            total_response_time += process.getWaitingTime(); // In RR, response time = waiting time
-        }
-        double avg_response_time = total_response_time / completed_processes.size();
-        std::cout << "Average Response Time: " << avg_response_time << " units\n";
-    
-        std::cout << "============================\n\n";
+
+        // Stampa le medie
+        std::cout << "\nAverage Waiting Time: " << avg_waiting_time << "\n";
+        std::cout << "Average Turnaround Time: " << avg_turnaround_time << "\n";
+        std::cout << "=========================================\n";
     }
 
     void run()
