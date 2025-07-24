@@ -17,7 +17,7 @@ int main() {
     std::thread t2([]() {
         shared_var.store(2, std::memory_order_release); // Aggiorna shared_var
     });
-
+    
     t1.join();
     t2.join();
     return 0;
