@@ -91,7 +91,7 @@ int main(int argc, char *argv[]) {
             std::cerr << "fork fallita" << std::endl;
             return 1;
         }else if(pids[i] == 0){
-            std::cout << "pid figlio: " << getpid() << std::endl;
+            std::cout << "pid figlio" << getpid() << std::endl;
             struct task_msg task;
             msgrcv(msqid, &task, sizeof(task.content), i + 1, 0);
 
@@ -109,7 +109,7 @@ int main(int argc, char *argv[]) {
             msgsnd(msqid, &result, sizeof(result.content), 0);
             return 0;
         }else{
-            /* test only
+            /*
             std::cout << "pid parent" << getppid() << std::endl;
             */
         }
